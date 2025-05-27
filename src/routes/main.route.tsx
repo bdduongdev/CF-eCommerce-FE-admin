@@ -7,6 +7,8 @@ import AddProductPage from "../pages/inventory/add-product";
 import CategoriesPage from "../pages/category/categories";
 
 import AddCategoryPage from "../pages/category/add";
+import UsersPage from "../pages/users/Users";
+import AddUserPage from "../pages/users/AddUser";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ export const router = createBrowserRouter([
   {
     path: "/category/create",
     element: <AddCategoryPage />,
+  },
+    {
+    path: "/users",
+    element: <UsersPage />,
+  },
+  {
+    path: "/users/add",
+    element: <AddUserPage />,
   },
   {
     path: "/about",
