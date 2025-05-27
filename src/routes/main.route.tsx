@@ -1,4 +1,4 @@
-import { createBrowserRouter, Link } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Dashboard from "../pages/Dashboard";
 import Orders from "../pages/orders/orders";
 import Inventory from "../pages/inventory/Inventory";
@@ -9,6 +9,9 @@ import CategoriesPage from "../pages/category/categories";
 import AddCategoryPage from "../pages/category/add";
 import UsersPage from "../pages/users/Users";
 import AddUserPage from "../pages/users/AddUser";
+import EditCategory from "../pages/category/EditCategory";
+
+import EditProductPage from "../pages/inventory/EditProductPage";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +35,10 @@ export const router = createBrowserRouter([
     path: "/inventory/create",
     element: <AddProductPage />,
   },
+  {
+    path: "/inventory/edit/:id",
+     element :<EditProductPage />
+  },
   //
   {
     path: "/category",
@@ -41,6 +48,10 @@ export const router = createBrowserRouter([
   {
     path: "/category/create",
     element: <AddCategoryPage />,
+  },
+  {
+    path: "/category/edit/:id",
+     element :<EditCategory />
   },
     {
     path: "/users",
