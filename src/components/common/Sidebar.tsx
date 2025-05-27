@@ -60,7 +60,7 @@ export default function Sidebar() {
           <SidebarItem to="/Orders" icon={<ShoppingBag size={18} />} label="Orders" />
           <SidebarItem to="/category" icon={<Users size={18} />} label="Category" />
           <SidebarItem to="/Inventory" icon={<Folder size={18} />} label="Products" />
-          <SidebarItem to="/Conversations" icon={<MessageCircle size={18} />} label="Conversations" />
+          <SidebarItem to="/users" icon={<MessageCircle size={18} />} label="Users" />
           <SidebarItem to="/Settings" icon={<Settings size={18} />} label="Settings" />
         </nav>
       </div>
@@ -79,7 +79,7 @@ export default function Sidebar() {
           <div className="text-xs text-gray-600 mt-1">Upgrade your account</div>
         </div>
 
-        <button className="flex items-center gap-2 text-red-500 text-sm hover:underline">
+        <button className="flex bg-white text-gray-900 items-center gap-2 text-red-500 text-sm hover:underline">
           <LogOut size={16} />
           Logout
         </button>
