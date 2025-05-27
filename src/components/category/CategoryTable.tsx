@@ -45,7 +45,7 @@ export default function CategoryTable() {
               </td>
               <td className="p-3 space-x-2">
                 <Link
-                  to={`/categories/edit/${cat.id}`}
+                  to={`/category/edit/${cat.id}`}
                   className="text-indigo-600 hover:underline text-xs"
                 >
                   Edit
