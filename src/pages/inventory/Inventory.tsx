@@ -11,13 +11,10 @@ export default function Inventory() {
         <div className="flex justify-between items-center mb-4">
           <Header />
           <button className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
-           <Link
-  to="/inventory/create"
-  className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
->
-  + Add a New Product
-</Link>
-           
+            <Link to="/inventory/create"
+                  className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700">
+              + Add a New Product
+            </Link>
           </button>
         </div>
 
