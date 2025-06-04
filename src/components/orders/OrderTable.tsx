@@ -35,12 +35,7 @@ export default function OrderTable() {
     <div className="bg-white rounded-lg p-4 shadow-sm mt-4">
       <div className="flex justify-between items-center px-4 py-3 border-b">
         <h2 className="text-gray-800 font-medium">All Orders</h2>
-        <Link
-          to="/orders/create"
-          className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700"
-        >
-          + Create a New Order
-        </Link>
+        
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
