@@ -4,7 +4,7 @@ import MainLayout from "../components/layouts/MainLayout";
 import Dashboard from "../pages/Dashboard";
 import Orders from "../pages/orders/orders";
 import Inventory from "../pages/inventory/Inventory";
-import CreateOrder from "../pages/orders/CreateOrder";
+
 import AddProductPage from "../pages/inventory/add-product";
 import CategoriesPage from "../pages/category/categories";
 import AddCategoryPage from "../pages/category/add";
@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "", element: <Dashboard /> },
       { path: "orders", element: <Orders /> },
-      { path: "orders/create", element: <CreateOrder /> },
+      
       { path: "inventory", element: <Inventory /> },
       { path: "inventory/create", element: <AddProductPage /> },
       { path: "inventory/edit/:id", element: <EditProductPage /> },

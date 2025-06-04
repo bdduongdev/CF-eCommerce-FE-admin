@@ -8,6 +8,8 @@ import {
   Headphones,
   Gift,
   LogOut,
+ TicketX,
+ PictureInPicture2,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -70,6 +72,9 @@ export default function Sidebar({ isOpen }: SidebarProps) {
             <SidebarItem to="/category" icon={<Users size={18} />} label="Category" />
             <SidebarItem to="/Inventory" icon={<Folder size={18} />} label="Products" />
             <SidebarItem to="/users" icon={<MessageCircle size={18} />} label="Users" />
+            <SidebarItem to="/banners" icon={<PictureInPicture2 size={18} />} label="Banners" />
+            <SidebarItem to="/ticket" icon={<TicketX size={18} />} label="Ticket" />
+
             <SidebarItem to="/Settings" icon={<Settings size={18} />} label="Settings" />
           </nav>
         </div>
