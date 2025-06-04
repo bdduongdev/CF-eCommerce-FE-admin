@@ -1,93 +1,118 @@
-
-import { useState } from 'react'
+import { useForm } from 'react-hook-form';
 
 type Props = {
-  onSubmit: (form: UserFormData ) => void
-}
+  onSubmit: (form: UserFormData) => void;
+};
 
-export type UserFormData  = {
-  name: string
-  email: string
-  role: string
-  status: string
-}
-
-
+export type UserFormData = {
+  username: string;
+  password: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  role_id: string;
+};
 
 export default function UserForm({ onSubmit }: Props) {
-  const [form, setForm] = useState<UserFormData >({
-    name: '',
-    email: '',
-    role: 'User',
-    status: 'Active'
-  })
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UserFormData>({
+    defaultValues: {
+      username: '',
+      password: '',
+      email: '',
+      phone_number: '',
+      address: '',
+      role_id: '',
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setForm({ ...form, [name]: value })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit(form)
-  }
+  const onFormSubmit = (data: UserFormData) => {
+    onSubmit(data);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
       <div>
-        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">
-          Full Name
-        </label>
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Username</label>
         <input
           type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
+          {...register('username', { 
+            required: 'Username is required',
+            maxLength: { value: 50, message: 'Username must not exceed 50 characters' }
+          })}
           className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
         />
+        {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
       </div>
 
       <div>
-        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">
-          Email
-        </label>
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Password</label>
+        <input
+          type="password"
+          {...register('password', { 
+            required: 'Password is required',
+            maxLength: { value: 255, message: 'Password must not exceed 255 characters' }
+          })}
+          className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+        />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+      </div>
+
+      <div>
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Email</label>
         <input
           type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
+          {...register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Invalid email address',
+            },
+            maxLength: { value: 100, message: 'Email must not exceed 100 characters' }
+          })}
           className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
         />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
       </div>
 
       <div>
-        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">
-          Role
-        </label>
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Phone Number</label>
+        <input
+          type="text"
+          {...register('phone_number', { 
+            maxLength: { value: 15, message: 'Phone number must not exceed 15 characters' }
+          })}
           className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
-        >
-          <option value="User">User</option>
-          <option value="Admin">Admin</option>
-        </select>
+        />
+        {errors.phone_number && <p className="text-red-500 text-sm">{errors.phone_number.message}</p>}
       </div>
 
       <div>
-        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">
-          Status
-        </label>
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Address</label>
+        <input
+          type="text"
+          {...register('address', { 
+            maxLength: { value: 255, message: 'Address must not exceed 255 characters' }
+          })}
+          className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+        />
+        {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+      </div>
+
+      <div>
+        <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Role</label>
         <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
+          {...register('role_id', { required: 'Role is required' })}
           className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
         >
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
+          <option value="">Select Role</option>
+          <option value="1">Admin</option>
+          <option value="2">Customer</option>
         </select>
+        {errors.role_id && <p className="text-red-500 text-sm">{errors.role_id.message}</p>}
       </div>
 
       <div className="flex justify-end">
@@ -96,5 +121,5 @@ export default function UserForm({ onSubmit }: Props) {
         </button>
       </div>
     </form>
-  )
+  );
 }

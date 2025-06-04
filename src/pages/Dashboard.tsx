@@ -1,5 +1,4 @@
-import Sidebar from "../components/common/Sidebar";
-import Header from "../components/common/Header";
+
 import StatCard from "../components/dashboard/StatCard";
 import RecentOrders from "../components/dashboard/RecentOrders";
 
@@ -13,11 +12,11 @@ import SalesSummaryChart from "../components/dashboard/SalesSummaryChart";
 
 export default function DashboardPage() {
   return (
-    <div className="w-screen min-h-screen flex">
+    <div className="flex">
       
-      <Sidebar />
-      <main className="flex-1 p-6 overflow-y-auto">
-        <Header />
+  
+      <main className="flex-1 p-6 bg-gray-50 min-h-screen">
+       
 
         <div className="grid grid-cols-4 gap-4 mb-4">
           <StatCard title="Sales" value="0.00" change="+0.00%" />

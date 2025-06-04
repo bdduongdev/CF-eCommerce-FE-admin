@@ -1,5 +1,4 @@
-import Sidebar from '../../components/common/Sidebar'
-import Header from '../../components/common/Header'
+
 import UserTable from '../../components/users/UserTable'
 import StatCard from '../../components/orders/StartCard'
 import { UsersIcon } from 'lucide-react'
@@ -7,9 +6,9 @@ import { UsersIcon } from 'lucide-react'
 export default function UsersPage() {
   return (
      <div className="flex">
-      <Sidebar />
+     
       <main className="flex-1 p-6 bg-gray-50 min-h-screen">
-        <Header />
+    
 
         <div className="flex flex-col gap-4 mb-6">
    
