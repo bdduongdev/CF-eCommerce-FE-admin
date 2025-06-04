@@ -1,62 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 interface Props {
   categoryId?: string;
 }
 
+type FormData = {
+  category_name: string;
+};
+
 export default function CategoryForm({ categoryId }: Props) {
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    status: 'Published',
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      category_name: '',
+    },
   });
 
   useEffect(() => {
     if (categoryId) {
       const fetched = {
-        name: 'Gadgets',
-        description: 'Electronic devices',
-        status: 'Published',
+        category_name: 'Gadgets',
       };
-      setForm(fetched);
+      reset(fetched);
     }
-  }, [categoryId]);
+  }, [categoryId, reset]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(categoryId ? 'Update category' : 'Create category', form);
+  const onSubmit = (data: FormData) => {
+    console.log(categoryId ? 'Update category' : 'Create category', data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        type="text"
-        name="name"
-        placeholder="Category Name"
-        value={form.name}
-        onChange={handleChange}
-        className="w-full border p-2 rounded text-sm"
-      />
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={form.description}
-        onChange={handleChange}
-        className="w-full border p-2 rounded text-sm"
-      />
-      <select
-        name="status"
-        value={form.status}
-        onChange={handleChange}
-        className="w-full border p-2 rounded text-sm"
-      >
-        <option value="Published">Published</option>
-        <option value="Unpublished">Unpublished</option>
-      </select>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label className="block mb-1 text-sm font-medium text-gray-700">Category Name</label>
+        <input
+          type="text"
+          placeholder="Category Name"
+          {...register('category_name', { 
+            required: 'Category name is required',
+            maxLength: { value: 50, message: 'Category name must not exceed 50 characters' }
+          })}
+          className="w-full border p-2 rounded text-sm"
+        />
+        {errors.category_name && (
+          <p className="text-red-500 text-sm">{errors.category_name.message}</p>
+        )}
+      </div>
 
       <button
         type="submit"

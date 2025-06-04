@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 
 const categories = [
-  { id: 1, name: 'Gadgets', description: 'Electronic devices', status: 'Published' },
-  { id: 2, name: 'Fashion', description: 'Clothing and accessories', status: 'Unpublished' },
+  { category_id: 1, category_name: 'Gadgets', created_at: '2025-06-01T10:00:00Z' },
+  { category_id: 2, category_name: 'Fashion', created_at: '2025-06-02T12:00:00Z' },
 ];
 
 export default function CategoryTable() {
@@ -21,31 +21,21 @@ export default function CategoryTable() {
       <table className="w-full text-sm text-left">
         <thead className="bg-gray-50 text-gray-500">
           <tr>
-            <th className="p-3">Name</th>
-            <th className="p-3">Description</th>
-            <th className="p-3">Status</th>
+            <th className="p-3">ID</th>
+            <th className="p-3">Category Name</th>
+            <th className="p-3">Created At</th>
             <th className="p-3">Actions</th>
           </tr>
         </thead>
         <tbody>
           {categories.map((cat) => (
-            <tr key={cat.id} className="border-t hover:bg-gray-50">
-              <td className="p-3 font-medium">{cat.name}</td>
-              <td className="p-3">{cat.description}</td>
-              <td className="p-3">
-                <span
-                  className={`text-xs font-medium px-2 py-1 rounded-full ${
-                    cat.status === 'Published'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-orange-100 text-orange-600'
-                  }`}
-                >
-                  {cat.status}
-                </span>
-              </td>
+            <tr key={cat.category_id} className="border-t hover:bg-gray-50">
+              <td className="p-3">{cat.category_id}</td>
+              <td className="p-3 font-medium">{cat.category_name}</td>
+              <td className="p-3">{new Date(cat.created_at).toLocaleDateString()}</td>
               <td className="p-3 space-x-2">
                 <Link
-                  to={`/category/edit/${cat.id}`}
+                  to={`/category/edit/${cat.category_id}`}
                   className="text-indigo-600 hover:underline text-xs"
                 >
                   Edit

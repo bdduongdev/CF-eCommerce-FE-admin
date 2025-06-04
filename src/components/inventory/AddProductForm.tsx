@@ -1,81 +1,96 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+
+type ProductFormData = {
+  name: string;
+  category: string;
+  price: string;
+  stock: string;
+  discount: string;
+  description: string;
+  status: string;
+};
 
 export default function AddProductForm() {
-  const [form, setForm] = useState({
-    name: '',
-    category: '',
-    price: '',
-    stock: '',
-    discount: '',
-    description: '',
-    status: 'Published',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProductFormData>({
+    defaultValues: {
+      name: '',
+      category: '',
+      price: '',
+      stock: '',
+      discount: '',
+      description: '',
+      status: 'Published',
+    },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const onSubmit = (data: ProductFormData) => {
+    console.log('Form data:', data);
   };
 
   return (
-    <form className="space-y-4 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
       <input
         type="text"
-        name="name"
+        {...register('name', { required: 'Product name is required' })}
         placeholder="Product Name"
-        value={form.name}
-        onChange={handleChange}
         className="w-full border rounded p-2 text-sm"
       />
+      {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+
       <input
         type="text"
-        name="category"
+        {...register('category', { required: 'Category is required' })}
         placeholder="Category"
-        value={form.category}
-        onChange={handleChange}
         className="w-full border rounded p-2 text-sm"
       />
+      {errors.category && <p className="text-red-500 text-sm">{errors.category.message}</p>}
+
       <div className="flex gap-2">
         <input
           type="number"
-          name="price"
+          {...register('price', { required: 'Price is required' })}
           placeholder="Unit Price"
-          value={form.price}
-          onChange={handleChange}
           className="flex-1 border rounded p-2 text-sm"
         />
         <input
           type="number"
-          name="discount"
+          {...register('discount')}
           placeholder="Discount"
-          value={form.discount}
-          onChange={handleChange}
           className="flex-1 border rounded p-2 text-sm"
         />
       </div>
+      {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
+
       <input
         type="number"
-        name="stock"
+        {...register('stock', { required: 'Stock is required' })}
         placeholder="In-Stock Quantity"
-        value={form.stock}
-        onChange={handleChange}
         className="w-full border rounded p-2 text-sm"
       />
+      {errors.stock && <p className="text-red-500 text-sm">{errors.stock.message}</p>}
+
       <select
-        name="status"
-        value={form.status}
-        onChange={handleChange}
+        {...register('status')}
         className="w-full border rounded p-2 text-sm"
       >
         <option value="Published">Published</option>
         <option value="Unpublished">Unpublished</option>
       </select>
+
       <textarea
-        name="description"
+        {...register('description')}
         placeholder="Product Description"
-        value={form.description}
-        onChange={handleChange}
         className="w-full border rounded p-2 text-sm"
         rows={4}
       />
+
+      <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm">
+        Create Product
+      </button>
     </form>
   );
 }

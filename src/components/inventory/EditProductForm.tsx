@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 type Product = {
-  name: string;
-  category: string;
-  price: string;
-  stock: string;
-  discount: string;
+  product_name: string;
   description: string;
-  status: string;
+  price: number;
+  stock_quantity: number;
+  category_id: string;
+  color_id: string;
+  storage_id: string;
+  image_url: string;
 };
 
 type Props = {
@@ -16,111 +18,133 @@ type Props = {
 };
 
 export default function EditProductForm({ initialData, onSubmit }: Props) {
-  const [form, setForm] = useState<Product>({
-    name: '',
-    category: '',
-    price: '',
-    stock: '',
-    discount: '',
-    description: '',
-    status: 'Published',
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Product>({
+    defaultValues: {
+      product_name: '',
+      description: '',
+      price: 0,
+      stock_quantity: 0,
+      category_id: '',
+      color_id: '',
+      storage_id: '',
+      image_url: '',
+    },
   });
 
   useEffect(() => {
     if (initialData) {
-      setForm(initialData);
+      reset(initialData);
     }
-  }, [initialData]);
+  }, [initialData, reset]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit?.(form);
+  const onFormSubmit = (data: Product) => {
+    onSubmit?.(data);
     alert('Product updated successfully!');
   };
 
   return (
-    <form className="space-y-4 w-full" onSubmit={handleSubmit}>
+    <form className="space-y-4 w-full" onSubmit={handleSubmit(onFormSubmit)}>
       <div>
-        <label className="text-sm block mb-1 font-medium">Product Name</label>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Product Name</label>
         <input
           type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
+          {...register('product_name', { 
+            required: 'Product name is required',
+            maxLength: { value: 100, message: 'Product name must not exceed 100 characters' }
+          })}
           className="w-full border rounded p-2 text-sm"
         />
+        {errors.product_name && <p className="text-red-500 text-sm">{errors.product_name.message}</p>}
       </div>
 
       <div>
-        <label className="text-sm block mb-1 font-medium">Category</label>
-        <input
-          type="text"
-          name="category"
-          value={form.category}
-          onChange={handleChange}
-          className="w-full border rounded p-2 text-sm"
-        />
-      </div>
-
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <label className="text-sm block mb-1 font-medium">Unit Price</label>
-          <input
-            type="number"
-            name="price"
-            value={form.price}
-            onChange={handleChange}
-            className="w-full border rounded p-2 text-sm"
-          />
-        </div>
-        <div className="flex-1">
-          <label className="text-sm block mb-1 font-medium">Discount</label>
-          <input
-            type="number"
-            name="discount"
-            value={form.discount}
-            onChange={handleChange}
-            className="w-full border rounded p-2 text-sm"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="text-sm block mb-1 font-medium">Stock Quantity</label>
-        <input
-          type="number"
-          name="stock"
-          value={form.stock}
-          onChange={handleChange}
-          className="w-full border rounded p-2 text-sm"
-        />
-      </div>
-
-      <div>
-        <label className="text-sm block mb-1 font-medium">Status</label>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Category</label>
         <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
+          {...register('category_id', { required: 'Category is required' })}
           className="w-full border rounded p-2 text-sm"
         >
-          <option value="Published">Published</option>
-          <option value="Unpublished">Unpublished</option>
+          <option value="">Select Category</option>
+          <option value="1">Gadgets</option>
+          <option value="2">Accessories</option>
         </select>
+        {errors.category_id && <p className="text-red-500 text-sm">{errors.category_id.message}</p>}
       </div>
 
       <div>
-        <label className="text-sm block mb-1 font-medium">Description</label>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Color</label>
+        <select
+          {...register('color_id', { required: 'Color is required' })}
+          className="w-full border rounded p-2 text-sm"
+        >
+          <option value="">Select Color</option>
+          <option value="1">Red</option>
+          <option value="2">Blue</option>
+        </select>
+        {errors.color_id && <p className="text-red-500 text-sm">{errors.color_id.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Storage</label>
+        <select
+          {...register('storage_id', { required: 'Storage is required' })}
+          className="w-full border rounded p-2 text-sm"
+        >
+          <option value="">Select Storage</option>
+          <option value="1">64GB</option>
+          <option value="2">128GB</option>
+        </select>
+        {errors.storage_id && <p className="text-red-500 text-sm">{errors.storage_id.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Price</label>
+        <input
+          type="number"
+          step="0.01"
+          {...register('price', { 
+            required: 'Price is required',
+            min: { value: 0, message: 'Price must be non-negative' }
+          })}
+          className="w-full border rounded p-2 text-sm"
+        />
+        {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Stock Quantity</label>
+        <input
+          type="number"
+          {...register('stock_quantity', { 
+            required: 'Stock is required',
+            min: { value: 0, message: 'Stock must be non-negative' }
+          })}
+          className="w-full border rounded p-2 text-sm"
+        />
+        {errors.stock_quantity && <p className="text-red-500 text-sm">{errors.stock_quantity.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Image URL</label>
+        <input
+          type="text"
+          {...register('image_url', { 
+            required: 'Image URL is required',
+            maxLength: { value: 255, message: 'Image URL must not exceed 255 characters' }
+          })}
+          className="w-full border rounded p-2 text-sm"
+        />
+        {errors.image_url && <p className="text-red-500 text-sm">{errors.image_url.message}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm block mb-1 font-medium text-gray-700 text-left">Description</label>
         <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
+          {...register('description')}
           className="w-full border rounded p-2 text-sm"
           rows={4}
         />
