@@ -13,6 +13,12 @@ import AddUserPage from "../pages/users/AddUser";
 import EditCategory from "../pages/category/EditCategory";
 
 import EditProductPage from "../pages/inventory/EditProductPage";
+import BannersPage from "../pages/banner/BannersPage";
+import AddBannerPage from "../pages/banner/AddBannerPage";
+import EditBannerPage from "../pages/banner/EditBannerPage";
+import DiscountsPage from "../pages/discounts/DiscountsPage";
+import AddDiscountPage from "../pages/discounts/AddDiscountPage";
+import EditDiscountPage from "../pages/discounts/EditDiscountPage";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +36,12 @@ export const router = createBrowserRouter([
       { path: "category/edit/:id", element: <EditCategory /> },
       { path: "users", element: <UsersPage /> },
       { path: "users/add", element: <AddUserPage /> },
+       { path: "banner", element: <BannersPage /> },
+       { path: "banner/add", element: <AddBannerPage /> },
+       { path: "banner/edit/:id", element: <EditBannerPage /> },
+         { path: "discounts", element: <DiscountsPage /> },
+       { path: "discounts/create", element: <AddDiscountPage /> },
+       { path: "discounts/edit/:id", element: <EditDiscountPage /> },
       { path: "about", element: <div>About</div> },
     ],
   },
