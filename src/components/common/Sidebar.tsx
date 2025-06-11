@@ -4,12 +4,13 @@ import {
   Users,
   Folder,
   MessageCircle,
-  Settings,
+ 
   Headphones,
   Gift,
   LogOut,
- TicketX,
- PictureInPicture2,
+  TicketX,
+  Images,
+  
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -22,6 +23,7 @@ type SidebarItemProps = {
 
 type SidebarProps = {
   isOpen: boolean;
+  toggleSidebar: () => void;
 };
 
 function SidebarItem({ to, icon, label, badge }: SidebarItemProps) {
@@ -29,7 +31,7 @@ function SidebarItem({ to, icon, label, badge }: SidebarItemProps) {
   const isActive = location.pathname === to;
 
   return (
-    <Link to={to}>
+    <Link to={to} onClick={badge !== undefined ? undefined : undefined}>
       <div
         className={`flex items-center justify-between px-4 py-2 rounded-lg cursor-pointer text-sm font-medium transition-all duration-150 ${
           isActive ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'
@@ -59,26 +61,31 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       {/* Nội dung chỉ hiển thị nếu isOpen */}
       <aside className={`${isOpen ? 'block' : 'hidden'} px-6 py-6 flex flex-col justify-between h-full`}>
         <div>
-          <div className="flex items-center gap-3 mb-10">
-            <div className="bg-indigo-100 p-2 rounded-full">
-              <div className="w-6 h-6 bg-indigo-500 rounded-full" />
+          {/* Header + nút đóng */}
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-100 p-2 rounded-full">
+                <div className="w-6 h-6 bg-indigo-500 rounded-full" />
+              </div>
+              <h1 className="text-xl font-semibold text-gray-800">Metrix</h1>
             </div>
-            <h1 className="text-xl font-semibold text-gray-800">Metrix</h1>
+          
           </div>
 
+          {/* Navigation */}
           <nav className="space-y-1">
             <SidebarItem to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" />
             <SidebarItem to="/Orders" icon={<ShoppingBag size={18} />} label="Orders" />
             <SidebarItem to="/category" icon={<Users size={18} />} label="Category" />
             <SidebarItem to="/Inventory" icon={<Folder size={18} />} label="Products" />
             <SidebarItem to="/users" icon={<MessageCircle size={18} />} label="Users" />
-            <SidebarItem to="/banners" icon={<PictureInPicture2 size={18} />} label="Banners" />
-            <SidebarItem to="/ticket" icon={<TicketX size={18} />} label="Ticket" />
-
-            <SidebarItem to="/Settings" icon={<Settings size={18} />} label="Settings" />
+            <SidebarItem to="/banner" icon={<Images size={18} />} label="Banners" />
+            <SidebarItem to="/discounts" icon={<TicketX size={18} />} label="Discounts" />
+            {/* <SidebarItem to="/Settings" icon={<Settings size={18} />} label="Settings" /> */}
           </nav>
         </div>
 
+        {/* Footer actions */}
         <div className="space-y-4">
           <button className="flex items-center gap-2 w-full py-2 px-3 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-800">
             <Headphones size={16} />

@@ -1,18 +1,15 @@
-import { useState } from 'react';
+
 import { Outlet } from 'react-router-dom';
 import Header from '../common/Header';
 import Sidebar from '../common/Sidebar';
+import useToggleSidebar from '../hooks/useToggleSidebar';
+
 
 const MainLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+   const { isSidebarOpen, toggleSidebar } = useToggleSidebar();
 
-  const toggleSidebar = () => {
-    console.log('Toggle sidebar');
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  return (
-    <div className="flex h-screen">
+  return ( 
+    <div className="flex h-screen overflow-x-hidden bg-gray-50">
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="flex-1 flex flex-col">
         <Header toggleSidebar={toggleSidebar} />

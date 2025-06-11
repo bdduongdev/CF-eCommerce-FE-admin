@@ -34,7 +34,7 @@ export default function UserForm({ onSubmit }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <div>
         <label className="block mb-1 text-sm font-medium text-gray-700 text-left">Username</label>
         <input
@@ -73,7 +73,7 @@ export default function UserForm({ onSubmit }: Props) {
             },
             maxLength: { value: 100, message: 'Email must not exceed 100 characters' }
           })}
-          className="w-full px-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-indigo-500"
+          className="w-full border p-2 rounded text-sm"
         />
         {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
       </div>

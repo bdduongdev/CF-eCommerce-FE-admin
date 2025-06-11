@@ -7,10 +7,10 @@ export default function AddCategoryPage() {
 
       <main className="flex-1 p-6 bg-gray-50 min-h-screen">
 
-        <h1 className="text-xl font-semibold mb-4">Add Category</h1>
-        <div className="bg-white p-6 rounded-lg shadow">
+        <h1 className="text-xl font-semibold mb-4"></h1>
+       
           <CategoryForm />
-        </div>
+        
       </main>
     </div>
   );
