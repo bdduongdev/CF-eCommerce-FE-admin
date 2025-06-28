@@ -10,6 +10,7 @@ import {
   LogOut,
   TicketX,
   Images,
+  MessageSquareText
   
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -75,13 +76,13 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           {/* Navigation */}
           <nav className="space-y-1">
             <SidebarItem to="/" icon={<LayoutDashboard size={18} />} label="Dashboard" />
-            <SidebarItem to="/Orders" icon={<ShoppingBag size={18} />} label="Orders" />
+            <SidebarItem to="/orders" icon={<ShoppingBag size={18} />} label="Orders" />
             <SidebarItem to="/category" icon={<Users size={18} />} label="Category" />
             <SidebarItem to="/Inventory" icon={<Folder size={18} />} label="Products" />
             <SidebarItem to="/users" icon={<MessageCircle size={18} />} label="Users" />
             <SidebarItem to="/banner" icon={<Images size={18} />} label="Banners" />
             <SidebarItem to="/discounts" icon={<TicketX size={18} />} label="Discounts" />
-            {/* <SidebarItem to="/Settings" icon={<Settings size={18} />} label="Settings" /> */}
+            <SidebarItem to="/reviews" icon={<MessageSquareText size={18} />} label="reviews" />
           </nav>
         </div>
 

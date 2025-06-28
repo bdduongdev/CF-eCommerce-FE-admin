@@ -1,4 +1,3 @@
-
 import { Outlet } from 'react-router-dom';
 import Header from '../common/Header';
 import Sidebar from '../common/Sidebar';
@@ -17,6 +16,8 @@ const MainLayout = () => {
           <Outlet />
         </main>
       </div>
+      {/* Debug components for development */}
+      {process.env.NODE_ENV === 'development'}
     </div>
   );
 };

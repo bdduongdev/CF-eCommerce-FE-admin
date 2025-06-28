@@ -7,7 +7,7 @@ interface Order {
 
 const orders: Order[] = Array(10).fill({
   product: "iPhone 13",
-  price: "₦730,000.00",
+  price: "VNĐ730,000.00",
   status: "Pending",
   date: "12 Sept 2022",
 });
