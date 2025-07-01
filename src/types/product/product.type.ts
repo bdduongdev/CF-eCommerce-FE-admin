@@ -1,4 +1,4 @@
-export interface Product {
+export interface ProductVariant {
   _id: string
   product: {
     _id: string
@@ -69,7 +69,7 @@ export interface ProductListResponse {
   success: boolean
   message: string
   data: {
-    products: Product[]
+    products: ProductVariant[]
     pagination: {
       total: number
       page: number
@@ -82,5 +82,5 @@ export interface ProductListResponse {
 export interface ProductDetailResponse {
   success: boolean
   message: string
-  data: Product
+  data: ProductVariant
 }

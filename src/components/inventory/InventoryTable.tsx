@@ -5,7 +5,7 @@ import { useCategories } from '../../hooks/useCategories'
 import { useColors } from '../../hooks/useColors'
 import { useStorages } from '../../hooks/useStorages'
 import { Trash2, Edit, Plus, Archive, Search, Filter, X } from 'lucide-react'
-import type { Product } from '../../types/product/product.type'
+import type { ProductVariant } from '../../types/product/product.type'
 
 export default function InventoryTable() {
   const [search, setSearch] = useState('')
@@ -34,7 +34,7 @@ export default function InventoryTable() {
 
   const deleteProductMutation = useDeleteProduct()
 
-  const products = data?.data?.products || []
+  const products: ProductVariant[] = data?.data?.products || []
   const pagination = data?.data?.pagination
   const categories = categoriesData?.data?.categories || []
   const colors = colorsData?.data?.colors || []
@@ -247,34 +247,34 @@ export default function InventoryTable() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product: Product, index: number) => (
+                {products.map((product: ProductVariant, index: number) => (
                   <tr key={product._id} className="border-t hover:bg-gray-50">
                     <td className="p-3">{(currentPage - 1) * limit + index + 1}</td>
                     <td className="p-3">
-                      <div className="font-medium text-gray-900">{product.product.product_name}</div>
+                      <div className="font-medium text-gray-900">{product.product?.product_name || 'N/A'}</div>
                       <div className="text-xs text-gray-500 md:hidden">
-                        {product.product.category?.category_name} • {product.color?.color_name} • {product.storage?.storage_name}
+                        {product.product?.category?.category_name || 'N/A'} • {product.color?.color_name || 'N/A'} • {product.storage?.storage_name || 'N/A'}
                       </div>
                     </td>
-                    <td className="p-3 hidden md:table-cell">{product.product.category?.category_name || 'N/A'}</td>
+                    <td className="p-3 hidden md:table-cell">{product.product?.category?.category_name || 'N/A'}</td>
                     <td className="p-3 hidden lg:table-cell">{product.color?.color_name || 'N/A'}</td>
                     <td className="p-3 hidden lg:table-cell">{product.storage?.storage_name || 'N/A'}</td>
-                    <td className="p-3">VNĐ{product.price?.toFixed(2) || '0.00'}</td>
-                    <td className="p-3 hidden xl:table-cell">VNĐ{product.total_price?.toFixed(2) || '0.00'}</td>
+                    <td className="p-3">VNĐ{typeof product.price === 'number' ? product.price.toFixed(2) : '0.00'}</td>
+                    <td className="p-3 hidden xl:table-cell">VNĐ{typeof product.total_price === 'number' ? product.total_price.toFixed(2) : '0.00'}</td>
                     <td className="p-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        product.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
+                        product.status === 'active'
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
-                        {product.status}
+                        {product.status || 'N/A'}
                       </span>
                     </td>
                     <td className="p-3 hidden sm:table-cell">
                       {product.image_url ? (
                         <img
                           src={product.image_url}
-                          alt={product.product.product_name}
+                          alt={product.product?.product_name || 'Product'}
                           className="w-8 h-8 rounded object-cover"
                         />
                       ) : (
@@ -284,7 +284,7 @@ export default function InventoryTable() {
                       )}
                     </td>
                     <td className="p-3 hidden md:table-cell text-gray-600">
-                      {new Date(product.created_at).toLocaleDateString()}
+                      {product.created_at ? new Date(product.created_at).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="p-3">
                       <div className="flex items-center gap-1">
@@ -297,7 +297,7 @@ export default function InventoryTable() {
                         </Link>
                         <button
                           className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
-                          onClick={() => handleDelete(product._id, product.product.product_name)}
+                          onClick={() => handleDelete(product._id, product.product?.product_name || 'Unknown')}
                           title="Delete"
                           disabled={deleteProductMutation.isPending}
                         >

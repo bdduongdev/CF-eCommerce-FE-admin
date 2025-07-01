@@ -37,8 +37,10 @@ export const getBannerById = async (id: string): Promise<SingleBannerResponse> =
 };
 
 // Create new banner
-export const createBanner = async (data: CreateBannerData): Promise<SingleBannerResponse> => {
-  const res = await axios.post('/banners', data);
+export const createBanner = async (formData: FormData) => {
+  const res = await axios.post('/banners', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
   return res.data;
 };
 

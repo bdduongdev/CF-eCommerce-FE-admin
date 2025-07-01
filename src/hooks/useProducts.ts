@@ -8,6 +8,7 @@ import {
   getTrashedProducts,
   restoreProduct
 } from '../services/product/productService'
+import type { ProductListResponse, ProductDetailResponse } from '../types/product/product.type'
 
 export const productKeys = {
   all: ['products'] as const,
@@ -19,7 +20,7 @@ export const productKeys = {
 }
 
 export const useProducts = (params?: any) => {
-  return useQuery({
+  return useQuery<ProductListResponse, Error>({
     queryKey: productKeys.list(params || {}),
     queryFn: () => getAllProducts(params),
     staleTime: 5 * 60 * 1000,
@@ -27,7 +28,7 @@ export const useProducts = (params?: any) => {
 }
 
 export const useProduct = (id: string) => {
-  return useQuery({
+  return useQuery<ProductDetailResponse, Error>({
     queryKey: productKeys.detail(id),
     queryFn: () => getProductById(id),
     enabled: !!id,
@@ -49,7 +50,7 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, formData }: { id: string; formData: FormData }) => updateProduct(id, formData),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: productKeys.lists() })
       queryClient.invalidateQueries({ queryKey: productKeys.detail(variables.id) })
     },
@@ -68,7 +69,7 @@ export const useDeleteProduct = () => {
 }
 
 export const useTrashedProducts = (params?: any) => {
-  return useQuery({
+  return useQuery<ProductListResponse, Error>({
     queryKey: productKeys.trashed(params || {}),
     queryFn: () => getTrashedProducts(params),
     staleTime: 5 * 60 * 1000,
@@ -84,4 +85,4 @@ export const useRestoreProduct = () => {
       queryClient.invalidateQueries({ queryKey: productKeys.all })
     },
   })
-} 
+}

@@ -1,81 +1,66 @@
-export interface ShippingAddress {
-  fullname: string;
-  phone: string;
-  street: string;
-  ward: string;
-  district: string;
-  city: string;
-  country?: string;
-}
-
-export interface ProductInfo {
-  product_name: string;
-  color_name: string;
-  storage_name: string;
-  sku: string;
-  image_url: string;
-}
-
-export interface OrderDetail {
-  _id: string;
-  order_id: string;
-  product_variant_id: string;
-  product_info: ProductInfo;
-  quantity: number;
-  unit_price: number;
-  total_price: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface User {
-  _id: string;
-  fullname: string;
-  email: string;
-  phone: string;
-}
-
-export interface Coupon {
-  _id: string;
-  code: string;
-  discount_value: number;
-  discount_type: 'percentage' | 'fixed';
-}
-
-export interface Order {
-  _id: string;
-  user_id: User;
-  coupon_id?: Coupon;
-  order_number: string;
-  order_date: string;
-  shipping_address: ShippingAddress;
-  payment_method: 'cod' | 'bank_transfer' | 'credit_card' | 'momo' | 'vnpay';
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
-  subtotal: number;
-  discount_amount: number;
-  shipping_fee: number;
-  total_amount: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
-  note?: string;
-  tracking_number?: string;
-  estimated_delivery?: string;
-  delivered_at?: string;
-  cancelled_at?: string;
-  cancelled_reason?: string;
-  created_at: string;
-  updated_at: string;
+export interface OrderFilters {
+  page?: number;
+  limit?: number;
+  status?: string;
+  payment_status?: string;
+  payment_method?: string;
+  search?: string;
+  start_date?: string;
+  end_date?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
 }
 
 export interface OrderResponse {
   success: boolean;
   message: string;
   data: {
-    orders: Order[];
+    orders: Array<{
+      _id: string;
+      user_id: {
+        _id: string;
+        fullname: string;
+        email: string;
+        phone: string;
+      };
+      order_number: string;
+      shipping_address: {
+        fullname: string;
+        phone: string;
+        city: string;
+        // Thêm các trường địa chỉ khác nếu cần
+      };
+      payment_method: string;
+      subtotal: number;
+      discount_amount: number;
+      shipping_fee: number;
+      total_amount: number;
+      status: string;
+      note?: string;
+      coupon_id?: {
+        _id: string;
+        code: string;
+        discount_value: number;
+        discount_type: string;
+      };
+      created_at: string;
+      updated_at?: string;
+      delivered_at?: string;
+      cancelled_at?: string;
+      cancelled_reason?: string;
+      tracking_number?: string;
+      estimated_delivery?: string;
+    }>;
     pagination: {
       total: number;
       page: number;
       limit: number;
       totalPages: number;
+    };
+    stats?: {
+      totalRevenue: number;
+      totalOrders: number;
+      averageOrderValue: number;
     };
   };
 }
@@ -84,25 +69,106 @@ export interface SingleOrderResponse {
   success: boolean;
   message: string;
   data: {
-    order: Order;
-    order_details: OrderDetail[];
+    order: {
+      _id: string;
+      user_id: {
+        _id: string;
+        fullname: string;
+        email: string;
+        phone: string;
+      };
+      order_number: string;
+      shipping_address: {
+        fullname: string;
+        phone: string;
+        city: string;
+        // Thêm các trường địa chỉ khác nếu cần
+      };
+      payment_method: string;
+      subtotal: number;
+      discount_amount: number;
+      shipping_fee: number;
+      total_amount: number;
+      status: string;
+      note?: string;
+      coupon_id?: {
+        _id: string;
+        code: string;
+        discount_value: number;
+        discount_type: string;
+      };
+      created_at: string;
+      updated_at?: string;
+      delivered_at?: string;
+      cancelled_at?: string;
+      cancelled_reason?: string;
+      tracking_number?: string;
+      estimated_delivery?: string;
+    };
+    order_details: Array<{
+      _id: string;
+      order_id: string;
+      product_variant_id: {
+        _id: string;
+        sku: string;
+      };
+      product_info: {
+        product_name: string;
+        color_name: string;
+        storage_name: string;
+        sku: string;
+        image_url: string;
+      };
+      quantity: number;
+      unit_price: number;
+      total_price: number;
+    }>;
   };
 }
 
 export interface UpdateOrderStatusData {
-  status: Order['status'];
+  status: string;
+  note?: string;
   tracking_number?: string;
   estimated_delivery?: string;
-  note?: string;
+  cancelled_reason?: string;
 }
 
-export interface OrderFilters {
-  page?: number;
-  limit?: number;
-  status?: Order['status'];
-  payment_status?: Order['payment_status'];
-  payment_method?: Order['payment_method'];
-  search?: string;
-  start_date?: string;
-  end_date?: string;
-} 
+// Add Order type for FE usage (for admin order table, list, etc.)
+export interface Order {
+  _id: string;
+  user_id: {
+    _id: string;
+    fullname: string;
+    email: string;
+    phone: string;
+  };
+  order_number: string;
+  shipping_address: {
+    fullname: string;
+    phone: string;
+    city: string;
+    // Add more fields if needed
+  };
+  payment_method: string;
+  payment_status?: string;
+  subtotal: number;
+  discount_amount: number;
+  shipping_fee: number;
+  total_amount: number;
+  status: string;
+  note?: string;
+  coupon_id?: {
+    _id: string;
+    code: string;
+    discount_value: number;
+    discount_type: string;
+  };
+  created_at: string;
+  updated_at?: string;
+  delivered_at?: string;
+  cancelled_at?: string;
+  cancelled_reason?: string;
+  tracking_number?: string;
+  estimated_delivery?: string;
+}

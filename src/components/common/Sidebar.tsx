@@ -7,7 +7,6 @@ import {
  
   Headphones,
   Gift,
-  LogOut,
   TicketX,
   Images,
   MessageSquareText
@@ -82,7 +81,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
             <SidebarItem to="/users" icon={<MessageCircle size={18} />} label="Users" />
             <SidebarItem to="/banner" icon={<Images size={18} />} label="Banners" />
             <SidebarItem to="/discounts" icon={<TicketX size={18} />} label="Discounts" />
-            <SidebarItem to="/reviews" icon={<MessageSquareText size={18} />} label="reviews" />
+            <SidebarItem to="/reviews" icon={<MessageSquareText size={18} />} label="Reviews" />
           </nav>
         </div>
 
@@ -101,10 +100,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
             <div className="text-xs text-gray-600 mt-1">Upgrade your account</div>
           </div>
 
-          <button className="flex bg-white text-gray-900 items-center gap-2 text-red-500 text-sm hover:underline">
-            <LogOut size={16} />
-            Logout
-          </button>
+          
         </div>
       </aside>
     </div>

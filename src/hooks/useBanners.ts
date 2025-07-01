@@ -54,7 +54,7 @@ export const useCreateBanner = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (data: CreateBannerData) => createBanner(data),
+    mutationFn: (formData: FormData) => createBanner(formData),
     onSuccess: () => {
       // Invalidate and refetch banners
       queryClient.invalidateQueries({ queryKey: ['banners'] });
@@ -120,4 +120,4 @@ export const useToggleBannerStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['banner-stats'] });
     },
   });
-}; 
+};

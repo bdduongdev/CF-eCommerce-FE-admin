@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, MapPin, Phone, Mail, Calendar, Package, CreditCard } from 'lucide-react';
 import StatusBadge from './StatusBadge';
-import type { Order, OrderDetail } from '../../types/order/order.type';
+import type { SingleOrderResponse } from '../../types/order/order.type';
+import { useUpdateOrderStatusAdmin } from '../../hooks/useOrders';
 
 interface OrderDetailModalProps {
-  order: Order | null;
-  orderDetails: OrderDetail[];
+  order: SingleOrderResponse['data']['order'] | null;
+  orderDetails: SingleOrderResponse['data']['order_details'];
   isOpen: boolean;
   onClose: () => void;
 }
@@ -36,8 +37,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     });
   };
 
-  const getPaymentMethodLabel = (method: Order['payment_method']) => {
-    const labels: Record<Order['payment_method'], string> = {
+  const getPaymentMethodLabel = (method: string) => {
+    const labels: Record<string, string> = {
       cod: 'Thanh toán khi nhận hàng',
       bank_transfer: 'Chuyển khoản ngân hàng',
       credit_card: 'Thẻ tín dụng',
@@ -47,14 +48,36 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     return labels[method] || method;
   };
 
-  const getPaymentStatusLabel = (status: Order['payment_status']) => {
-    const labels: Record<Order['payment_status'], string> = {
-      pending: 'Chờ thanh toán',
-      paid: 'Đã thanh toán',
-      failed: 'Thanh toán thất bại',
-      refunded: 'Đã hoàn tiền'
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [form, setForm] = useState<{
+    status: string;
+    note: string;
+    tracking_number: string;
+    estimated_delivery: string;
+    cancelled_reason: string;
+  }>(() => ({
+    status: order?.status || 'pending',
+    note: order?.note || '',
+    tracking_number: order?.tracking_number || '',
+    estimated_delivery: order?.estimated_delivery ? order.estimated_delivery.slice(0, 10) : '',
+    cancelled_reason: ''
+  }));
+  const updateStatusMutation = useUpdateOrderStatusAdmin();
+
+  const handleUpdateStatus = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!order) return;
+    const data: any = {
+      status: form.status,
+      note: form.note,
+      tracking_number: form.tracking_number,
+      estimated_delivery: form.estimated_delivery || undefined,
     };
-    return labels[status] || status;
+    if (form.status === 'cancelled') {
+      data.cancelled_reason = form.cancelled_reason;
+    }
+    updateStatusMutation.mutate({ id: order._id, data });
+    setShowUpdateForm(false);
   };
 
   return (
@@ -67,8 +90,16 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
+              <h3 className="text-lg leading-6 font-medium text-gray-900 flex items-center gap-4">
                 Chi tiết đơn hàng #{order.order_number}
+                {order.status !== 'cancelled' && (
+                  <button
+                    className="ml-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                    onClick={() => setShowUpdateForm((v) => !v)}
+                  >
+                    {showUpdateForm ? 'Đóng cập nhật' : 'Cập nhật trạng thái'}
+                  </button>
+                )}
               </h3>
               <button
                 onClick={onClose}
@@ -77,6 +108,81 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 <X className="h-6 w-6" />
               </button>
             </div>
+
+            {showUpdateForm && (
+              <form className="mb-6 space-y-3" onSubmit={handleUpdateStatus}>
+                <div>
+                  <label className="block text-sm font-medium">Trạng thái mới</label>
+                  <select
+                    className="w-full border rounded px-2 py-1"
+                    value={form.status}
+                    onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                    required
+                  >
+                    <option value="">Chọn trạng thái</option>
+                    <option value="pending">Chờ xác nhận</option>
+                    <option value="confirmed">Đã xác nhận</option>
+                    <option value="processing">Đang xử lý</option>
+                    <option value="shipped">Đã gửi hàng</option>
+                    <option value="delivered">Đã giao hàng</option>
+                    <option value="cancelled">Đã hủy</option>
+                    <option value="returned">Đã hoàn trả</option>
+                  </select>
+                </div>
+                {form.status === 'cancelled' && (
+                  <div>
+                    <label className="block text-sm font-medium">Lý do hủy</label>
+                    <input
+                      className="w-full border rounded px-2 py-1"
+                      value={form.cancelled_reason}
+                      onChange={e => setForm(f => ({ ...f, cancelled_reason: e.target.value }))}
+                      required
+                      maxLength={200}
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-medium">Ghi chú</label>
+                  <input
+                    className="w-full border rounded px-2 py-1"
+                    value={form.note}
+                    onChange={e => setForm(f => ({ ...f, note: e.target.value }))}
+                    maxLength={500}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Mã vận chuyển</label>
+                  <input
+                    className="w-full border rounded px-2 py-1"
+                    value={form.tracking_number}
+                    onChange={e => setForm(f => ({ ...f, tracking_number: e.target.value }))}
+                    maxLength={100}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Ngày dự kiến giao</label>
+                  <input
+                    type="date"
+                    className="w-full border rounded px-2 py-1"
+                    value={form.estimated_delivery}
+                    onChange={e => setForm(f => ({ ...f, estimated_delivery: e.target.value }))}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  disabled={updateStatusMutation.isPending}
+                >
+                  {updateStatusMutation.isPending ? 'Đang cập nhật...' : 'Xác nhận cập nhật'}
+                </button>
+                {updateStatusMutation.isError && (
+                  <div className="text-red-600 text-sm mt-1">Cập nhật thất bại</div>
+                )}
+                {updateStatusMutation.isSuccess && (
+                  <div className="text-green-600 text-sm mt-1">Cập nhật thành công</div>
+                )}
+              </form>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Order Information */}
@@ -98,8 +204,8 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     </div>
                     <div>
                       <span className="text-gray-500">Trạng thái thanh toán: </span>
-                      <span className={order.payment_status === 'paid' ? 'text-green-600' : 'text-yellow-600'}>
-                        {getPaymentStatusLabel(order.payment_status)}
+                      <span>
+                        {order.payment_method === 'cod' ? 'Chờ thanh toán' : 'Đã thanh toán'}
                       </span>
                     </div>
                   </div>
@@ -129,9 +235,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
                       <div>
                         <div className="font-medium">{order.shipping_address.fullname}</div>
-                        <div>{order.shipping_address.street}</div>
-                        <div>{order.shipping_address.ward}, {order.shipping_address.district}</div>
-                        <div>{order.shipping_address.city}, {order.shipping_address.country}</div>
+                        <div>{order.shipping_address.city}</div>
                         <div className="mt-1">SĐT: {order.shipping_address.phone}</div>
                       </div>
                     </div>
@@ -216,4 +320,4 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
   );
 };
 
-export default OrderDetailModal; 
+export default OrderDetailModal;

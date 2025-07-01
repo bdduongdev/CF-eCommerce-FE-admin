@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import OrderTable from '../../components/orders/OrderTable';
 import OrderDetailModal from '../../components/orders/OrderDetailModal';
 import OrderSummary from '../../components/orders/OrderSummary';
-import { useOrders, useOrder, useOrderStats, useCancelOrder } from '../../hooks/useOrders';
+import { useOrdersAdmin, useOrderAdmin, useOrderStats, useCancelOrder } from '../../hooks/useOrders';
 import type { Order, OrderFilters } from '../../types/order/order.type';
 
 const OrdersPage: React.FC = () => {
@@ -15,9 +15,9 @@ const OrdersPage: React.FC = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Fetch data
-  const { data: ordersData, isLoading: ordersLoading } = useOrders(filters);
+  const { data: ordersData, isLoading: ordersLoading } = useOrdersAdmin(filters);
   const { data: statsData, isLoading: statsLoading } = useOrderStats();
-  const { data: orderDetailData, isLoading: detailLoading } = useOrder(
+  const { data: orderDetailData, isLoading: detailLoading } = useOrderAdmin(
     selectedOrder?._id || ''
   );
 
@@ -59,7 +59,7 @@ const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -71,7 +71,7 @@ const OrdersPage: React.FC = () => {
       </div>
 
       {/* Order Summary */}
-      <OrderSummary 
+      <OrderSummary
         stats={statsData?.data || {
           total_orders: 0,
           pending_orders: 0,
