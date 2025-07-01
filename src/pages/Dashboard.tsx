@@ -11,12 +11,13 @@ import { useReviewStats } from '../hooks/useReviews';
 import { useDiscountStats } from '../hooks/useDiscounts';
 import { useBanners } from '../hooks/useBanners';
 import { useCategories } from '../hooks/useCategories';
+import { useOrdersAdmin } from '../hooks/useOrders';
 
 // app/dashboard/page.tsx
 
 export default function DashboardPage() {
   // Fetch data from various APIs
-  const { data: ordersData } = useOrders({ page: 1, limit: 5 });
+  const { data: ordersAdminData } = useOrdersAdmin({ page: 1, limit: 5 });
   const { data: productsData } = useProducts({ page: 1, limit: 10 });
   const { data: usersData } = useUsers({ page: 1, limit: 10 });
   const { data: reviewStats } = useReviewStats();
@@ -25,20 +26,22 @@ export default function DashboardPage() {
   const { data: categoriesData } = useCategories({ page: 1, limit: 10 });
 
   // Calculate statistics
-  const totalOrders = ordersData?.data?.pagination?.total || 0;
-  const totalProducts = productsData?.data?.pagination?.total || 0;
-  const totalUsers = usersData?.data?.pagination?.total || 0;
-  const totalReviews = reviewStats?.data?.total_reviews || 0;
-  const totalDiscounts = discountStats?.data?.total_discounts || 0;
-  const totalBanners = bannersData?.data?.pagination?.total || 0;
-  const totalCategories = categoriesData?.data?.pagination?.total || 0;
+  const totalOrders = ordersAdminData?.data?.pagination?.total ?? 0;
+  const totalProducts = productsData?.data?.pagination?.total ?? 0;
+  const totalUsers = usersData?.data?.pagination?.total ?? 0;
+  const totalReviews = reviewStats?.data?.total_reviews ?? 0;
+  const totalDiscounts = discountStats?.data?.total_discounts ?? 0;
+  const totalBanners = bannersData?.data?.pagination?.total ?? 0;
+  const totalCategories = categoriesData?.data?.pagination?.total ?? 0;
 
-  // Calculate revenue (mock data for now)
-  const totalRevenue = totalOrders * 2500000; // Mock average order value
-  const revenueChange = '+12.5%'; // Mock change
+  // Lấy doanh thu thực tế từ stats nếu có
+  const stats = (ordersAdminData?.data as any)?.stats || {};
+  const totalRevenue = typeof stats.totalRevenue === 'number' ? stats.totalRevenue : 0;
+  const averageOrderValue = typeof stats.averageOrderValue === 'number' ? stats.averageOrderValue : 0;
+  const revenueChange = '+0%'; // Không có dữ liệu tăng trưởng thực tế
 
   // Get recent orders for the chart
-  const recentOrders = ordersData?.data?.orders || [];
+  const recentOrders = ordersAdminData?.data?.orders || [];
   const recentProducts = productsData?.data?.products || [];
 
   return (
@@ -67,26 +70,22 @@ export default function DashboardPage() {
                 currency: 'VND'
               }).format(totalRevenue)}
               change={revenueChange}
-              icon="💰"
             />
             <StatCard 
               title="Khách hàng" 
-              value={totalUsers.toLocaleString('vi-VN')} 
+              value={typeof totalUsers === 'number' ? totalUsers.toLocaleString() : totalUsers} 
               change="+5.2%" 
-              icon="👥"
             />
             <StatCard 
               title="Đơn hàng" 
-              value={totalOrders.toLocaleString('vi-VN')} 
-              change="+8.1%" 
-              icon="📦"
+              value={typeof totalOrders === 'number' ? totalOrders.toLocaleString() : totalOrders} 
+              change="+0%" 
             />
             <StatCard 
               title="Sản phẩm" 
-              value={totalProducts.toLocaleString('vi-VN')} 
+              value={typeof totalProducts === 'number' ? totalProducts.toLocaleString() : totalProducts} 
               change="+3.4%" 
               highlight 
-              icon="🛍️"
             />
           </div>
 
@@ -94,27 +93,23 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard 
               title="Đánh giá" 
-              value={totalReviews.toLocaleString('vi-VN')} 
+              value={typeof totalReviews === 'number' ? totalReviews.toLocaleString() : totalReviews} 
               change={`${reviewStats?.data?.average_rating?.toFixed(1) || 0}⭐`}
-              icon="⭐"
             />
             <StatCard 
               title="Giảm giá" 
-              value={totalDiscounts.toLocaleString('vi-VN')} 
+              value={typeof totalDiscounts === 'number' ? totalDiscounts.toLocaleString() : totalDiscounts} 
               change={`${discountStats?.data?.active_discounts || 0} hoạt động`}
-              icon="🎯"
             />
             <StatCard 
               title="Banner" 
-              value={totalBanners.toLocaleString('vi-VN')} 
+              value={typeof totalBanners === 'number' ? totalBanners.toLocaleString() : totalBanners} 
               change="+2.1%" 
-              icon="🖼️"
             />
             <StatCard 
               title="Danh mục" 
-              value={totalCategories.toLocaleString('vi-VN')} 
+              value={typeof totalCategories === 'number' ? totalCategories.toLocaleString() : totalCategories} 
               change="+1.8%" 
-              icon="📁"
             />
           </div>
 
@@ -189,7 +184,7 @@ export default function DashboardPage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">
-                  {totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0}
+                  {averageOrderValue}
                 </div>
                 <div className="text-sm text-gray-600">Giá trị đơn hàng TB (VNĐ)</div>
               </div>

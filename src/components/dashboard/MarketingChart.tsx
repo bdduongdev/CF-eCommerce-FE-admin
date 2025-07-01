@@ -1,38 +1,59 @@
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useOrdersAdmin } from '../../hooks/useOrders';
 
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+const COLORS = ['#6366F1', '#FDBA74', '#FACC15', '#34D399', '#F87171', '#A78BFA', '#FBBF24'];
 
-const data = [
-  { name: 'Acquisition', value: 45 },
-  { name: 'Purchase', value: 30 },
-  { name: 'Retention', value: 25 },
-];
-
-const COLORS = ['#6366F1', '#FDBA74', '#FACC15'];
+const STATUS_LABELS: Record<string, string> = {
+  pending: 'Chờ xác nhận',
+  confirmed: 'Đã xác nhận',
+  processing: 'Đang xử lý',
+  shipped: 'Đã gửi hàng',
+  delivered: 'Đã giao hàng',
+  cancelled: 'Đã hủy',
+  returned: 'Đã hoàn trả',
+};
 
 export default function MarketingChart() {
+  const { data: ordersAdminData } = useOrdersAdmin({ page: 1, limit: 100 });
+  const orders = ordersAdminData?.data?.orders || [];
+
+  // Đếm số lượng theo trạng thái
+  const statusCount: Record<string, number> = {};
+  orders.forEach(order => {
+    statusCount[order.status] = (statusCount[order.status] || 0) + 1;
+  });
+
+  const chartData = Object.entries(statusCount).map(([status, value]) => ({
+    name: STATUS_LABELS[status] || status,
+    value,
+  }));
+
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border">
-      <div className="text-sm text-gray-500 mb-2">Marketing</div>
-      <ResponsiveContainer width="100%" height={200}>
+      <div className="text-sm text-gray-500 mb-2">Phân bố trạng thái đơn hàng</div>
+      <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie
-            data={data}
-            innerRadius={50}
-            outerRadius={70}
+            data={chartData}
             dataKey="value"
-            paddingAngle={2}
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={80}
+            fill="#6366F1"
+            label
           >
-            {data.map((_, i) => (
-              <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
+            {chartData.map((entry, idx) => (
+              <Cell key={`cell-${idx}`} fill={COLORS[idx % COLORS.length]} />
             ))}
           </Pie>
+          <Tooltip />
+          <Legend />
         </PieChart>
       </ResponsiveContainer>
-      <div className="flex justify-around text-xs text-gray-600 mt-2">
-        <span>Acquisition</span>
-        <span>Purchase</span>
-        <span>Retention</span>
-      </div>
+      {chartData.length === 0 && (
+        <div className="text-center text-gray-400 mt-4">Không có dữ liệu đơn hàng</div>
+      )}
     </div>
   );
 }

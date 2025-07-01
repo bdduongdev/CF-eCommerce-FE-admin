@@ -33,9 +33,7 @@ const Header = ({ toggleSidebar }: Props) => {
       </div>
       
       <div className="flex items-center gap-4">
-        <select className="px-2 py-1 border rounded">
-          <option>Nanny's Shop</option>
-        </select>
+        
         
         {/* User info */}
         <div className="flex items-center gap-2">

@@ -4,7 +4,7 @@ import type { Banner, CreateBannerData, UpdateBannerData } from '../../types/ban
 
 interface BannerFormProps {
   banner?: Banner | null;
-  onSubmit: (data: CreateBannerData | UpdateBannerData) => void;
+  onSubmit: (data: FormData) => void;
   onCancel: () => void;
   isLoading?: boolean;
 }
@@ -15,39 +15,37 @@ const BannerForm: React.FC<BannerFormProps> = ({
   onCancel,
   isLoading = false
 }) => {
-  const [formData, setFormData] = useState<CreateBannerData>({
+  const [formData, setFormData] = useState<Omit<CreateBannerData, 'image_url'>>({
     title: '',
-    image_url: '',
     link_url: '',
     position: '',
     is_active: true,
     start_date: '',
     end_date: ''
   });
-
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (banner) {
       setFormData({
         title: banner.title || '',
-        image_url: banner.image_url,
         link_url: banner.link_url || '',
         position: banner.position || '',
         is_active: banner.is_active,
         start_date: banner.start_date ? banner.start_date.split('T')[0] : '',
         end_date: banner.end_date ? banner.end_date.split('T')[0] : ''
       });
+      setImagePreview(banner.image_url || '');
     }
   }, [banner]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-
-    if (!formData.image_url.trim()) {
-      newErrors.image_url = 'URL hình ảnh là bắt buộc';
+    if (!selectedImage && !imagePreview) {
+      newErrors.image = 'Ảnh banner là bắt buộc';
     }
-
     if (formData.start_date && formData.end_date) {
       const startDate = new Date(formData.start_date);
       const endDate = new Date(formData.end_date);
@@ -55,34 +53,37 @@ const BannerForm: React.FC<BannerFormProps> = ({
         newErrors.end_date = 'Ngày kết thúc phải sau ngày bắt đầu';
       }
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (validateForm()) {
-      const submitData = { ...formData };
-      
-      // Convert empty strings to undefined for optional fields
-      if (!submitData.title) delete submitData.title;
-      if (!submitData.link_url) delete submitData.link_url;
-      if (!submitData.position) delete submitData.position;
-      if (!submitData.start_date) delete submitData.start_date;
-      if (!submitData.end_date) delete submitData.end_date;
-      
-      onSubmit(submitData);
+      const data = new FormData();
+      if (selectedImage) data.append('image', selectedImage);
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          data.append(key, value as string);
+        }
+      });
+      onSubmit(data);
     }
   };
 
   const handleInputChange = (field: keyof CreateBannerData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setImagePreview(URL.createObjectURL(file));
+      setErrors(prev => ({ ...prev, image: '' }));
     }
   };
 
@@ -93,7 +94,6 @@ const BannerForm: React.FC<BannerFormProps> = ({
           {banner ? 'Chỉnh sửa Banner' : 'Tạo Banner Mới'}
         </h2>
       </div>
-
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Title */}
         <div>
@@ -110,38 +110,31 @@ const BannerForm: React.FC<BannerFormProps> = ({
           />
         </div>
 
-        {/* Image URL */}
+        {/* Image Upload */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            URL Hình ảnh <span className="text-red-500">*</span>
+            Ảnh Banner <span className="text-red-500">*</span>
           </label>
-          <div className="relative">
+          <div className="flex items-center gap-4">
             <input
-              type="url"
-              value={formData.image_url}
-              onChange={(e) => handleInputChange('image_url', e.target.value)}
-              className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                errors.image_url ? 'border-red-300' : 'border-gray-300'
-              }`}
-              placeholder="https://example.com/image.jpg"
-              required
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="block"
             />
-            <Upload className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          </div>
-          {errors.image_url && (
-            <p className="mt-1 text-sm text-red-600">{errors.image_url}</p>
-          )}
-          {formData.image_url && (
-            <div className="mt-2">
+            {imagePreview && (
               <img
-                src={formData.image_url}
+                src={imagePreview}
                 alt="Preview"
                 className="w-32 h-20 object-cover rounded border"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
-            </div>
+            )}
+          </div>
+          {errors.image && (
+            <p className="mt-1 text-sm text-red-600">{errors.image}</p>
           )}
         </div>
 

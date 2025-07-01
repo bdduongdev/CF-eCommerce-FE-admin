@@ -1,4 +1,4 @@
-import axios from '../../lib/axios';
+import axios from '../../lib/axios'; 
 import type { 
   OrderResponse, 
   SingleOrderResponse, 
@@ -6,8 +6,8 @@ import type {
   OrderFilters 
 } from '../../types/order/order.type';
 
-// Get all orders with filters (sử dụng API customer cho admin)
-export const getAllOrders = async (filters: OrderFilters = {}): Promise<OrderResponse> => {
+// 🔹 Lấy đơn hàng của khách hàng (customer)
+export const getCustomerOrders = async (filters: OrderFilters = {}): Promise<OrderResponse> => {
   const params = new URLSearchParams();
   
   if (filters.page) params.append('page', filters.page.toString());
@@ -18,57 +18,89 @@ export const getAllOrders = async (filters: OrderFilters = {}): Promise<OrderRes
   return res.data;
 };
 
-// Get order by ID
+// 🔹 Lấy đơn hàng theo ID cho khách hàng
 export const getOrderById = async (id: string): Promise<SingleOrderResponse> => {
   const res = await axios.get(`/orders/${id}`);
   return res.data;
 };
 
-// Update order status (có thể cần tạo API riêng cho admin)
-export const updateOrderStatus = async (id: string, data: UpdateOrderStatusData): Promise<{ success: boolean; message: string }> => {
-  // Tạm thời sử dụng endpoint customer, có thể cần tạo API admin riêng
-  const res = await axios.patch(`/orders/${id}/status`, data);
-  return res.data;
-};
-
-// Cancel order
+// 🔹 Hủy đơn hàng (customer)
 export const cancelOrder = async (id: string, reason: string): Promise<{ success: boolean; message: string }> => {
   const res = await axios.patch(`/orders/${id}/cancel`, { reason });
   return res.data;
 };
 
-// Mock order statistics (vì không có API stats)
-export const getOrderStats = async (): Promise<{
-  success: boolean;
-  message: string;
-  data: {
-    total_orders: number;
-    pending_orders: number;
-    confirmed_orders: number;
-    processing_orders: number;
-    shipped_orders: number;
-    delivered_orders: number;
-    cancelled_orders: number;
-    total_revenue: number;
-    today_revenue: number;
-    this_month_revenue: number;
-  };
-}> => {
-  // Mock data cho demo
-  return {
-    success: true,
-    message: 'Lấy thống kê đơn hàng thành công',
-    data: {
-      total_orders: 25,
-      pending_orders: 5,
-      confirmed_orders: 3,
-      processing_orders: 2,
-      shipped_orders: 4,
-      delivered_orders: 10,
-      cancelled_orders: 1,
-      total_revenue: 15000000,
-      today_revenue: 500000,
-      this_month_revenue: 8000000
-    }
-  };
-}; 
+// ✅ Lấy tất cả đơn hàng (admin)
+export const getAllOrdersAdmin = async (filters: OrderFilters = {}): Promise<OrderResponse> => {
+  const params = new URLSearchParams();
+  
+  if (filters.page) params.append('page', filters.page.toString());
+  if (filters.limit) params.append('limit', filters.limit.toString());
+  if (filters.status) params.append('status', filters.status);
+  if (filters.payment_status) params.append('payment_status', filters.payment_status);
+  if (filters.payment_method) params.append('payment_method', filters.payment_method);
+  if (filters.search) params.append('search', filters.search);
+  if (filters.start_date) params.append('start_date', filters.start_date);
+  if (filters.end_date) params.append('end_date', filters.end_date);
+  if (filters.sort_by) params.append('sort_by', filters.sort_by);
+  if (filters.sort_order) params.append('sort_order', filters.sort_order);
+
+  // ❗ Đúng route admin
+  const res = await axios.get(`/orders/admin/all?${params.toString()}`);
+  return res.data;
+};
+
+// 🔹 Lấy chi tiết đơn hàng (admin)
+export const getOrderByIdAdmin = async (id: string): Promise<SingleOrderResponse> => {
+  const res = await axios.get(`/orders/admin/${id}`);
+  return res.data;
+};
+
+// 🔹 Cập nhật trạng thái đơn hàng (admin)
+export const updateOrderStatusAdmin = async (
+  id: string,
+  data: UpdateOrderStatusData
+): Promise<{ success: boolean; message: string }> => {
+  const res = await axios.patch(`/orders/admin/${id}/status`, data);
+  return res.data;
+};
+
+// 🔹 Tạo đơn hàng từ giỏ hàng
+export const createOrderFromCart = async (data: {
+  shipping_address: any;
+  payment_method: string;
+  coupon_code?: string;
+  note?: string;
+}): Promise<SingleOrderResponse> => {
+  const res = await axios.post('/orders/from-cart', data);
+  return res.data;
+};
+
+// 🔹 Tạo đơn hàng trực tiếp
+export const createOrderDirect = async (data: {
+  variant_id: string;
+  quantity: number;
+  shipping_address: any;
+  payment_method: string;
+  note?: string;
+}): Promise<SingleOrderResponse> => {
+  const res = await axios.post('/orders/direct', data);
+  return res.data;
+};
+
+// 🔹 Tạo đơn hàng chung
+export const createOrder = async (data: {
+  shipping_address: any;
+  payment_method: string;
+  note?: string;
+  items: Array<{ product_variant_id: string; quantity: number }>;
+}): Promise<SingleOrderResponse> => {
+  const res = await axios.post('/orders', data);
+  return res.data;
+};
+
+// 🔹 Hủy đơn hàng (admin)
+export const cancelOrderAdmin = async (id: string, reason: string): Promise<{ success: boolean; message: string }> => {
+  const res = await axios.patch(`/orders/admin/${id}/cancel`, { reason });
+  return res.data;
+};

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Edit, Trash2, Search, Filter } from 'lucide-react';
+import { Eye, Search, Filter } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import type { Order, OrderFilters } from '../../types/order/order.type';
 
@@ -24,8 +24,6 @@ const OrderTable: React.FC<OrderTableProps> = ({
   orders,
   isLoading,
   onViewOrder,
-  onEditOrder,
-  onDeleteOrder,
   filters,
   onFiltersChange,
   pagination,
@@ -52,24 +50,24 @@ const OrderTable: React.FC<OrderTableProps> = ({
   };
 
   const getPaymentMethodLabel = (method: Order['payment_method']) => {
-    const labels = {
+    const labels: Record<string, string> = {
       cod: 'Thanh toán khi nhận hàng',
       bank_transfer: 'Chuyển khoản ngân hàng',
       credit_card: 'Thẻ tín dụng',
       momo: 'Ví MoMo',
       vnpay: 'VNPay'
     };
-    return labels[method] || method;
+    return labels[method as string] || method;
   };
 
   const getPaymentStatusLabel = (status: Order['payment_status']) => {
-    const labels = {
+    const labels: Record<string, string> = {
       pending: 'Chờ thanh toán',
       paid: 'Đã thanh toán',
       failed: 'Thanh toán thất bại',
       refunded: 'Đã hoàn tiền'
     };
-    return labels[status] || status;
+    return status ? labels[status as string] || status : '';
   };
 
   return (
@@ -89,7 +87,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
               />
             </div>
           </div>
-          
+
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-blue-500"
@@ -216,22 +214,8 @@ const OrderTable: React.FC<OrderTableProps> = ({
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button
-                        onClick={() => onEditOrder(order)}
-                        className="text-green-600 hover:text-green-900 p-1"
-                        title="Chỉnh sửa"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      {order.status === 'pending' && (
-                        <button
-                          onClick={() => onDeleteOrder(order._id)}
-                          className="text-red-600 hover:text-red-900 p-1"
-                          title="Hủy đơn hàng"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
+
+                      {order.status === 'pending'}
                     </div>
                   </td>
                 </tr>

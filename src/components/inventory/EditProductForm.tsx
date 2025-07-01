@@ -50,11 +50,11 @@ export default function EditProductForm() {
       reset({
         product_name: product.product?.product_name || '',
         description: product.product?.description || '',
-        price: product.price,
+        price: product.price ?? 0,
         category_id: product.product?.category?._id || '',
         color_id: product.color?._id || '',
         storage_id: product.storage?._id || '',
-        status: product.status
+        status: product.status || 'active',
       });
       setImagePreview(product.image_url || product.product?.image_url || '');
     }
@@ -73,7 +73,9 @@ export default function EditProductForm() {
   };
 
   const onSubmit = async (data: ProductFormData) => {
-    if (!id) return;
+    // Lấy đúng Product._id từ productData
+    const productId = productData?.data?.product?._id;
+    if (!productId) return;
 
     try {
       const formData = new FormData();
@@ -92,7 +94,7 @@ export default function EditProductForm() {
         formData.append('image', selectedImage);
       }
 
-      await updateProductMutation.mutateAsync({ id, formData });
+      await updateProductMutation.mutateAsync({ id: productId, formData });
       alert('Product updated successfully!');
       navigate('/inventory');
     } catch (error: any) {

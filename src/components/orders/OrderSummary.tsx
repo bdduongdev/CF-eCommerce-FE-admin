@@ -10,7 +10,6 @@ import {
   DollarSign,
   Calendar
 } from 'lucide-react';
-import type { Order } from '../../types/order/order.type';
 
 interface OrderSummaryProps {
   stats: {
@@ -210,4 +209,4 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ stats, isLoading }) => {
   );
 };
 
-export default OrderSummary; 
+export default OrderSummary;

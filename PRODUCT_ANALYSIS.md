@@ -221,4 +221,49 @@ Hiển thị loading khi đang fetch dữ liệu:
 ) : (
   // Render categories
 )}
-``` 
+```
+
+## Luồng chạy và thao tác quản lý Order (Admin)
+
+### 1. Luồng chạy dữ liệu
+- Khi truy cập trang quản lý đơn hàng (`/orders`), FE sẽ sử dụng các hook `useOrdersAdmin` và `useOrderAdmin` để lấy danh sách và chi tiết đơn hàng từ API admin.
+- Các hook này gọi các hàm service tương ứng (`getAllOrdersAdmin`, `getOrderByIdAdmin`) trong `src/services/order/orderService.ts`, sử dụng endpoint `/orders/admin/all` và `/orders/admin/:orderId`.
+- Axios sẽ tự động gắn accessToken từ localStorage vào header để xác thực quyền admin.
+- Dữ liệu trả về sẽ được truyền vào các component như `OrderTable`, `OrderDetailModal` để hiển thị danh sách, chi tiết đơn hàng.
+
+### 2. Các hook và service liên quan
+- `useOrdersAdmin(filters)`: Lấy danh sách đơn hàng admin, có thể truyền filter (page, limit, status, ...).
+- `useOrderAdmin(id)`: Lấy chi tiết đơn hàng theo id cho admin.
+- `getAllOrdersAdmin`, `getOrderByIdAdmin`: Hàm gọi API thực tế, sử dụng axios.
+
+### 3. Thao tác trên giao diện FE
+- Trang quản lý order cho phép admin:
+  - Xem danh sách đơn hàng với phân trang, lọc trạng thái, tìm kiếm.
+  - Xem chi tiết từng đơn hàng qua modal.
+  - (Có thể mở rộng) Hủy đơn hàng, cập nhật trạng thái đơn hàng bằng các hàm đã có trong service.
+- Mọi thao tác đều sử dụng API admin, đảm bảo chỉ admin mới thao tác được.
+
+### 4. Tóm tắt
+- FE không cần chỉnh BE, chỉ cần gọi đúng endpoint admin.
+- Đảm bảo accessToken của admin hợp lệ trong localStorage.
+- Có thể mở rộng thêm các thao tác quản lý khác dễ dàng qua service đã có.
+
+### 3. Quyền thao tác của Admin trong quản lý đơn hàng
+- **Xem danh sách đơn hàng:**
+  - Admin có thể xem toàn bộ đơn hàng của hệ thống với phân trang, lọc trạng thái, tìm kiếm theo mã đơn hàng.
+  - Thao tác này sử dụng hook `useOrdersAdmin` và service `getAllOrdersAdmin`.
+- **Xem chi tiết đơn hàng:**
+  - Admin có thể xem chi tiết từng đơn hàng, bao gồm thông tin khách hàng, sản phẩm, trạng thái, lịch sử đơn hàng.
+  - Thao tác này sử dụng hook `useOrderAdmin` và service `getOrderByIdAdmin`.
+- **Cập nhật trạng thái đơn hàng:**
+  - Admin có thể thay đổi trạng thái đơn hàng (ví dụ: xác nhận, xử lý, giao hàng, hoàn thành, hủy, hoàn trả, ...).
+  - Thao tác này sẽ sử dụng service `updateOrderStatusAdmin` (gọi API `/orders/admin/:orderId/status`).
+- **Hủy đơn hàng:**
+  - Admin có thể chủ động hủy bất kỳ đơn hàng nào nếu cần thiết (ví dụ: khách yêu cầu, phát hiện gian lận, ...).
+  - Thao tác này có thể sử dụng service `cancelOrder` hoặc mở rộng thêm API riêng cho admin nếu cần.
+- **Mở rộng:**
+  - Có thể bổ sung các thao tác khác như: chỉnh sửa thông tin đơn hàng, thêm ghi chú, xem lịch sử thay đổi trạng thái, xuất file đơn hàng, ...
+
+**Lưu ý:**
+- Tất cả các thao tác chỉnh sửa chỉ admin mới có quyền thực hiện, xác thực qua accessToken.
+- Các thao tác cập nhật trạng thái, hủy đơn hàng cần giao diện xác nhận để tránh thao tác nhầm. 
